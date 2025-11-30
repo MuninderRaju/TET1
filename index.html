@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TG TET Mock Exam (Responsive Fix)</title>
+    <style>
+        /* --- GENERAL STYLES (Desktop Default) --- */
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; padding: 0; 
+            background-color: #f4f6f9; 
+            display: flex; flex-direction: column; 
+            height: 100vh; /* Desktop: Fixed Height */
+            overflow: hidden; /* Desktop: No Body Scroll */
+            user-select: none; 
+        }
+        
+        /* Header - Sticky for Mobile */
+        header { 
+            background-color: #2c3e50; color: white; 
+            padding: 10px 15px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); 
+            flex-shrink: 0;
+            position: sticky; top: 0; z-index: 1000; /* Timer sticks to top */
+        }
+        .timer { background: #fff; color: #c0392b; padding: 5px 12px; border-radius: 4px; font-weight: bold; font-size: 1.1rem; }
+
+        /* Layout */
+        .main-container { display: flex; flex: 1; overflow: hidden; }
+        
+        /* Question Area */
+        .question-area { 
+            flex: 3; padding: 20px; overflow-y: auto; 
+            background: white; display: flex; flex-direction: column; 
+        }
+        .question-header { display: flex; justify-content: space-between; margin-bottom: 15px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        .q-text-box { margin-bottom: 20px; }
+        .q-eng { font-size: 1.15rem; font-weight: bold; color: #2c3e50; margin-bottom: 8px; }
+        .q-tel { font-size: 1.1rem; color: #2980b9; line-height: 1.5; }
+
+        /* Options */
+        .options-container { display: flex; flex-direction: column; gap: 12px; }
+        .option-label { 
+            display: flex; align-items: flex-start; padding: 12px; 
+            border: 1px solid #ddd; border-radius: 8px; cursor: pointer; 
+            background: #fff; transition: 0.2s; 
+        }
+        .option-label:hover { background-color: #f8f9fa; border-color: #3498db; }
+        input[type="radio"] { margin-right: 15px; margin-top: 5px; transform: scale(1.3); flex-shrink: 0; }
+        
+        /* Review Colors */
+        .correct-answer { background-color: #d4edda !important; border-color: #28a745 !important; } 
+        .wrong-answer { background-color: #f8d7da !important; border-color: #dc3545 !important; } 
+
+        /* Buttons */
+        .buttons-container { margin-top: auto; padding-top: 30px; display: flex; justify-content: space-between; gap: 10px; }
+        .btn { padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1rem; color: white; font-weight: bold; flex: 1; }
+        .btn-save { background-color: #27ae60; } 
+        .btn-clear { background-color: #7f8c8d; } 
+        .btn-submit { background-color: #c0392b; width: 100%; margin-top: 15px; padding: 15px; font-size: 1.1rem;}
+
+        /* Sidebar (Palette) */
+        .sidebar { 
+            flex: 1; background: #ecf0f1; 
+            display: flex; flex-direction: column; 
+            border-left: 1px solid #bdc3c7; max-width: 350px; 
+        }
+        .candidate-info { padding: 15px; background: #dfe6e9; border-bottom: 1px solid #bdc3c7; text-align: center; flex-shrink: 0; }
+        .palette-area { padding: 15px; flex: 1; overflow-y: auto; }
+        .palette-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+        .q-num { aspect-ratio: 1; display: flex; justify-content: center; align-items: center; cursor: pointer; border: 1px solid #bdc3c7; font-weight: bold; background: #fff; border-radius: 4px; }
+        
+        /* Status Colors */
+        .answered { background-color: #27ae60; color: white; border-color: #27ae60; }
+        .not-answered { background-color: #e74c3c; color: white; border-color: #e74c3c; }
+        .current-q { border: 2px solid #2980b9; transform: scale(1.1); box-shadow: 0 0 5px rgba(0,0,0,0.3); }
+
+        /* Footer */
+        .main-footer { 
+            background-color: #34495e; color: white; 
+            text-align: center; padding: 15px; 
+            font-size: 0.9rem; flex-shrink: 0; 
+            border-top: 4px solid #1abc9c; 
+            line-height: 1.5;
+        }
+
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); justify-content: center; align-items: center; z-index: 2000; }
+        .modal-content { background: white; padding: 30px; border-radius: 10px; text-align: center; width: 85%; max-width: 400px; }
+
+        /* --- MOBILE RESPONSIVE FIXES --- */
+        @media screen and (max-width: 768px) {
+            body { 
+                height: auto; /* Allow body to grow */
+                overflow-y: auto; /* Enable Scroll on Mobile */
+                display: block; /* Remove Flex constraint on body */
+            }
+
+            .main-container { 
+                display: block; /* Stack blocks vertically */
+                height: auto; 
+                overflow: visible; 
+            }
+
+            .question-area { 
+                height: auto; /* Grow with content */
+                border-right: none; 
+                border-bottom: 5px solid #bdc3c7; /* Thick separator */
+                padding-bottom: 30px;
+            }
+
+            .sidebar { 
+                height: auto; /* Adjust height based on content */
+                max-width: 100%; 
+                border-left: none; 
+            }
+
+            .buttons-container {
+                position: relative; /* Normal flow */
+                margin-top: 30px;
+            }
+
+            .palette-area {
+                max-height: 300px; /* Limit palette height on mobile */
+                overflow-y: auto;
+            }
+
+            .q-eng { font-size: 1.1rem; }
+            .q-tel { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div style="font-size: 0.95rem;">TG TET (Bilingual)</div>
+    <div class="timer" id="timer">20:00</div>
+</header>
+
+<div class="main-container">
+    <div class="question-area">
+        <div class="question-header">
+            <span style="font-weight:bold; color:#555;">Question No: <span id="q-number">1</span></span>
+            <span id="review-status" style="color:#e67e22; font-weight:bold; display:none;">REVIEW MODE</span>
+        </div>
+        
+        <div class="q-text-box">
+            <div class="q-eng" id="q-text-en">Loading...</div>
+            <div class="q-tel" id="q-text-te">Loading...</div>
+        </div>
+
+        <div class="options-container" id="options-box">
+            </div>
+
+        <div class="buttons-container">
+            <button class="btn btn-clear" id="btn-clear" onclick="clearResponse()">Clear Response</button>
+            <button class="btn btn-save" id="btn-next" onclick="saveAndNext()">Save & Next</button>
+        </div>
+    </div>
+
+    <div class="sidebar">
+        <div class="candidate-info">
+            <strong>Candidate Name</strong><br>
+            <small>TET Aspirant</small>
+        </div>
+        
+        <div class="palette-area">
+            <div style="margin-bottom:10px; font-weight:bold; color:#555;">Question Palette:</div>
+            <div class="palette-grid" id="palette-box"></div>
+            
+            <div style="margin-top:20px; font-size:0.8rem; display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+                <span style="color:#27ae60;">■ Answered</span>
+                <span style="color:#e74c3c;">■ Not Answered</span>
+                <span style="color:#7f8c8d;">□ Not Visited</span>
+            </div>
+        </div>
+
+        <div style="padding: 15px; border-top: 1px solid #ccc; background: white;">
+            <button class="btn btn-submit" id="btn-submit" onclick="submitExam()">SUBMIT EXAM</button>
+            <button class="btn btn-save" id="btn-restart" style="width:100%; display:none;" onclick="location.reload()">START NEW EXAM</button>
+        </div>
+    </div>
+</div>
+
+<footer class="main-footer">
+    Designed & Developed by:<br> 
+    <strong style="font-size:1.1em; color:#1abc9c;">A. MUNINDER RAJU</strong><br>
+    Gazetted Headmaster, ZPHS CHINCHOLI (B)
+</footer>
+
+<div id="resultModal" class="modal">
+    <div class="modal-content">
+        <h2 style="color:#2c3e50;">Exam Completed!</h2>
+        <div style="font-size:3rem; color:#27ae60; font-weight:bold;" id="score">0</div>
+        <p style="color:#7f8c8d; font-size:1.1rem;" id="percentage"></p>
+        <hr style="margin: 20px 0; border-top:1px solid #eee;">
+        <button class="btn btn-clear" style="background:#3498db; width:100%; margin-bottom:10px;" onclick="startReview()">Review Answers</button>
+        <button class="btn btn-save" style="width:100%;" onclick="location.reload()">Retake Exam</button>
+    </div>
+</div>
+
+<script>
+    // --- 20 QUESTIONS DATA ---
+    const questions = [
+        { q_en: "1. Who is the father of 'Operant Conditioning'?", q_te: "1. 'కార్యసాధక నిబంధన' (Operant Conditioning) సిద్ధాంతకర్త ఎవరు?", options_en: ["Pavlov", "Skinner", "Thorndike", "Kohler"], options_te: ["పావలోవ్", "స్కిన్నర్", "థార్న్ డైక్", "కోహ్లర్"], ans: 1 },
+        { q_en: "2. According to Vygotsky, cognitive development depends on:", q_te: "2. వైగోట్స్కీ ప్రకారం పిల్లల సంజ్ఞానాత్మక వికాసం దేనిపై ఆధారపడి ఉంటుంది?", options_en: ["Genetics", "Social Interaction", "Physical Environment", "Rewards"], options_te: ["జన్యువులు", "సాంఘిక ప్రతిచర్యలు", "భౌతిక పరిసరం", "బహుమతులు"], ans: 1 },
+        { q_en: "3. The term 'IQ' was coined by:", q_te: "3. 'ప్రజ్ఞాలబ్ధి' (IQ) అనే పదాన్ని మొదట ఉపయోగించిన వారు ఎవరు?", options_en: ["Binet", "Stern", "Terman", "Galton"], options_te: ["బినే", "స్టెర్న్", "టెర్మన్", "గాల్టన్"], ans: 1 },
+        { q_en: "4. Which is NOT a stage in Kohlberg's Moral Development?", q_te: "4. కోల్ బర్గ్ నైతిక వికాస సిద్ధాంతంలో లేని దశ ఏది?", options_en: ["Pre-conventional", "Conventional", "Post-conventional", "Un-conventional"], options_te: ["పూర్వ సంప్రదాయ", "సంప్రదాయ", "ఉత్తర సంప్రదాయ", "అసంప్రదాయ"], ans: 3 },
+        { q_en: "5. Identify the 'Savarnadeergha Sandhi' example:", q_te: "5. 'సవర్ణదీర్ఘ సంధి'కి ఉదాహరణను గుర్తించండి:", options_en: ["Rameshwara", "Vidyarthi", "Gajendra", "Athyantha"], options_te: ["రామేశ్వర", "విద్యార్థి", "గజేంద్ర", "అత్యంత"], ans: 1 },
+        { q_en: "6. Who wrote 'Bhagavatam' in Telugu?", q_te: "6. తెలుగులో 'భాగవతం' రచించింది ఎవరు?", options_en: ["Nannaya", "Tikkana", "Potana", "Srinatha"], options_te: ["నన్నయ", "తిక్కన", "పోతన", "శ్రీనాథుడు"], ans: 2 },
+        { q_en: "7. Choose the correct plural form of 'Child':", q_te: "7. 'Child' పదానికి బహువచనం (Plural) ఏమిటి?", options_en: ["Childs", "Children", "Childrens", "Childes"], options_te: ["Childs", "Children", "Childrens", "Childes"], ans: 1 },
+        { q_en: "8. He has been sleeping _____ 2 hours.", q_te: "8. సరైన Preposition ను గుర్తించండి: He has been sleeping _____ 2 hours.", options_en: ["since", "for", "from", "at"], options_te: ["since", "for", "from", "at"], ans: 1 },
+        { q_en: "9. The sum of angles in a triangle is:", q_te: "9. త్రిభుజంలోని కోణాల మొత్తం ఎంత?", options_en: ["90 degrees", "180 degrees", "360 degrees", "270 degrees"], options_te: ["90 డిగ్రీలు", "180 డిగ్రీలు", "360 డిగ్రీలు", "270 డిగ్రీలు"], ans: 1 },
+        { q_en: "10. Which is the smallest prime number?", q_te: "10. అతి చిన్న ప్రధాన సంఖ్య ఏది?", options_en: ["0", "1", "2", "3"], options_te: ["0", "1", "2", "3"], ans: 2 },
+        { q_en: "11. If a square has a side of 4cm, what is its area?", q_te: "11. ఒక చతురస్రం భుజం 4 సెం.మీ అయితే, దాని వైశాల్యం ఎంత?", options_en: ["8 sq.cm", "12 sq.cm", "16 sq.cm", "20 sq.cm"], options_te: ["8 చ.సెం.మీ", "12 చ.సెం.మీ", "16 చ.సెం.మీ", "20 చ.సెం.మీ"], ans: 2 },
+        { q_en: "12. Which vitamin is obtained from Sunlight?", q_te: "12. సూర్యరశ్మి ద్వారా లభించే విటమిన్ ఏది?", options_en: ["Vitamin A", "Vitamin B", "Vitamin C", "Vitamin D"], options_te: ["విటమిన్ A", "విటమిన్ B", "విటమిన్ C", "విటమిన్ D"], ans: 3 },
+        { q_en: "13. The green pigment in leaves is called:", q_te: "13. ఆకులలో ఉండే ఆకుపచ్చని పదార్థం పేరేమిటి?", options_en: ["Hemoglobin", "Chlorophyll", "Melanin", "Keratin"], options_te: ["హీమోగ్లోబిన్", "క్లోరోఫిల్", "మెలనిన్", "కెరాటిన్"], ans: 1 },
+        { q_en: "14. World Environment Day is celebrated on:", q_te: "14. ప్రపంచ పర్యావరణ దినోత్సవం ఎప్పుడు జరుపుకుంటారు?", options_en: ["June 5", "April 22", "March 21", "May 1"], options_te: ["జూన్ 5", "ఏప్రిల్ 22", "మార్చి 21", "మే 1"], ans: 0 },
+        { q_en: "15. The Chairman of the Drafting Committee of Indian Constitution:", q_te: "15. భారత రాజ్యాంగ ముసాయిదా కమిటీ చైర్మన్ ఎవరు?", options_en: ["Gandhi", "Nehru", "Dr. B.R. Ambedkar", "Patel"], options_te: ["గాంధీ", "నెహ్రూ", "డా. బి.ఆర్. అంబేద్కర్", "పటేల్"], ans: 2 },
+        { q_en: "16. Which river is known as 'Dakshin Ganga'?", q_te: "16. 'దక్షిణ గంగ' అని ఏ నదిని పిలుస్తారు?", options_en: ["Krishna", "Godavari", "Kaveri", "Yamuna"], options_te: ["కృష్ణ", "గోదావరి", "కావేరి", "యమున"], ans: 1 },
+        { q_en: "17. Total number of districts in Telangana initially (2014):", q_te: "17. తెలంగాణ ఏర్పడినప్పుడు (2014) ఉన్న జిల్లాల సంఖ్య ఎంత?", options_en: ["10", "31", "33", "23"], options_te: ["10", "31", "33", "23"], ans: 0 },
+        { q_en: "18. Who is the current Governor of Telangana (2025)?", q_te: "18. తెలంగాణ ప్రస్తుత గవర్నర్ ఎవరు (2025 నాటికి)?", options_en: ["Jishnu Dev Varma", "Tamilisai Soundararajan", "C.P. Radhakrishnan", "None"], options_te: ["జిష్ణు దేవ్ వర్మ", "తమిళిసై సౌందరరాజన్", "సి.పి. రాధాకృష్ణన్", "ఎవరూ కాదు"], ans: 0 },
+        { q_en: "19. RAM stands for:", q_te: "19. RAM అనగా ఏమిటి?", options_en: ["Read Access Memory", "Random Access Memory", "Read All Memory", "None"], options_te: ["రీడ్ యాక్సెస్ మెమరీ", "రాండమ్ యాక్సెస్ మెమరీ", "రీడ్ ఆల్ మెమరీ", "ఏదీ కాదు"], ans: 1 },
+        { q_en: "20. Teacher's Day is celebrated on the birthday of:", q_te: "20. ఎవరి పుట్టినరోజును ఉపాధ్యాయ దినోత్సవంగా జరుపుకుంటాం?", options_en: ["Nehru", "Tagore", "Dr. Sarvepalli Radhakrishnan", "APJ Abdul Kalam"], options_te: ["నెహ్రూ", "ఠాగూర్", "డా. సర్వేపల్లి రాధాకృష్ణన్", "అబ్దుల్ కలాం"], ans: 2 }
+    ];
+
+    let currentQIndex = 0;
+    let userAnswers = new Array(questions.length).fill(null); 
+    let timeLeft = 1200; 
+    let timerInterval;
+    let isReviewMode = false;
+
+    function loadQuestion(index) {
+        currentQIndex = index;
+        document.getElementById('q-number').innerText = index + 1;
+        document.getElementById('q-text-en').innerText = questions[index].q_en;
+        document.getElementById('q-text-te').innerText = questions[index].q_te;
+        
+        const optionsBox = document.getElementById('options-box');
+        optionsBox.innerHTML = '';
+
+        questions[index].options_en.forEach((optEn, i) => {
+            let optTe = questions[index].options_te[i];
+            let isChecked = userAnswers[index] === i ? 'checked' : '';
+            
+            let rowStyle = '';
+            let statusText = '';
+            
+            if (isReviewMode) {
+                if (i === questions[index].ans) {
+                    rowStyle = 'correct-answer';
+                    statusText = '<span style="color:green; margin-left:auto; font-weight:bold;">✔ Correct</span>';
+                }
+                if (userAnswers[index] === i && i !== questions[index].ans) {
+                    rowStyle = 'wrong-answer';
+                    statusText = '<span style="color:red; margin-left:auto; font-weight:bold;">✘ Wrong</span>';
+                }
+                isChecked += ' disabled';
+            }
+
+            optionsBox.innerHTML += `
+                <label class="option-label ${rowStyle}">
+                    <input type="radio" name="option" value="${i}" ${isChecked}>
+                    <div style="display:flex; flex-direction:column; width:100%;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <span style="font-weight:600; font-size:1rem; color:#333;">${optEn}</span>
+                            ${statusText}
+                        </div>
+                        <span style="font-size:0.95rem; color:#555;">${optTe}</span>
+                    </div>
+                </label>
+            `;
+        });
+        updatePalette();
+        updateButtons();
+    }
+
+    function saveAndNext() {
+        if(isReviewMode) {
+            if (currentQIndex < questions.length - 1) loadQuestion(currentQIndex + 1);
+            return;
+        }
+
+        const selected = document.querySelector('input[name="option"]:checked');
+        if (selected) userAnswers[currentQIndex] = parseInt(selected.value);
+        
+        if (currentQIndex < questions.length - 1) loadQuestion(currentQIndex + 1);
+        else alert("This is the last question. Check Palette & Submit.");
+        updatePalette();
+    }
+
+    function clearResponse() {
+        if(isReviewMode) return;
+        const selected = document.querySelector('input[name="option"]:checked');
+        if (selected) {
+            selected.checked = false;
+            userAnswers[currentQIndex] = null;
+        }
+    }
+
+    function updatePalette() {
+        const paletteBox = document.getElementById('palette-box');
+        paletteBox.innerHTML = '';
+        userAnswers.forEach((ans, i) => {
+            let statusClass = 'not-visited';
+            if (ans !== null) statusClass = 'answered';
+            else if (i === currentQIndex) statusClass = 'not-answered';
+            
+            let activeClass = (i === currentQIndex) ? 'current-q' : '';
+            paletteBox.innerHTML += `<div class="q-num ${statusClass} ${activeClass}" onclick="loadQuestion(${i})">${i + 1}</div>`;
+        });
+    }
+
+    function updateButtons() {
+        if (isReviewMode) {
+            document.getElementById('btn-clear').style.display = 'none';
+            document.getElementById('btn-next').innerText = 'Next Question >';
+        }
+    }
+
+    function startTimer() {
+        const timerElement = document.getElementById('timer');
+        timerInterval = setInterval(() => {
+            let m = Math.floor(timeLeft / 60);
+            let s = timeLeft % 60;
+            timerElement.innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+            if (timeLeft-- <= 0) { clearInterval(timerInterval); submitExam(); }
+        }, 1000);
+    }
+
+    function submitExam() {
+        clearInterval(timerInterval);
+        let score = 0;
+        questions.forEach((q, i) => { if (userAnswers[i] === q.ans) score++; });
+        
+        document.getElementById('score').innerText = `${score} / ${questions.length}`;
+        let percent = Math.round((score/questions.length)*100);
+        document.getElementById('percentage').innerText = `Percentage: ${percent}%`;
+        document.getElementById('resultModal').style.display = 'flex';
+    }
+
+    function startReview() {
+        isReviewMode = true;
+        document.getElementById('resultModal').style.display = 'none';
+        document.getElementById('review-status').style.display = 'inline';
+        document.getElementById('btn-submit').style.display = 'none';
+        document.getElementById('btn-restart').style.display = 'block';
+        loadQuestion(0);
+    }
+
+    window.onload = function() { loadQuestion(0); startTimer(); };
+</script>
+
+</body>
+</html>
